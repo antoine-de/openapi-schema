@@ -120,3 +120,54 @@ fn test_flatten_nested_module() {
     assert!(!properties.contains_key("flatten"));
     assert!(!properties.contains_key("primitive_field"));
 }
+
+pub mod nested {
+    use openapi_schema::OpenapiSchema;
+    use serde::Serialize;
+    #[derive(OpenapiSchema, Serialize)]
+    pub struct A {
+        primitive_field: u64,
+    }
+    #[derive(OpenapiSchema, Serialize)]
+    pub struct B {
+        pub inner: A,
+    }
+}
+
+pub mod other_module {
+    use openapi_schema::OpenapiSchema;
+    use serde::Serialize;
+    #[derive(OpenapiSchema, Serialize)]
+    pub struct OtherStruct {
+        not_flattened: super::nested::A,
+    }
+}
+
+#[derive(OpenapiSchema, Serialize)]
+#[allow(dead_code)]
+struct C {
+    outer: other_module::OtherStruct,
+    #[serde(flatten)]
+    flatten: nested::B,
+}
+#[test]
+fn test_flatten_several_modules() {
+    let mut spec = Spec::default();
+    C::generate_schema(&mut spec);
+    println!("{}", serde_json::to_string_pretty(&spec).unwrap());
+
+    let schemas = spec.components.as_ref().unwrap().schemas.as_ref().unwrap();
+    assert!(schemas.contains_key("A"));
+    assert!(!schemas.contains_key("B"));
+
+    let c = match schemas.get("C") {
+        Some(ObjectOrReference::Object(ref user)) => user,
+        _ => panic!("unexpected reference"),
+    };
+
+    let properties = c.properties.as_ref().unwrap();
+    assert!(properties.contains_key("outer"));
+    assert!(properties.contains_key("inner"));
+    assert!(!properties.contains_key("flatten"));
+    assert!(!properties.contains_key("primitive_field"));
+}

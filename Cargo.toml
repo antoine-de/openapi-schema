@@ -8,7 +8,7 @@ edition = "2018"
 default = ["chrono"]
 
 [dependencies]
-openapi = { git = "https://github.com/boxdot/openapi", rev = "e42474a" }
+openapi = { git = "https://github.com/antoine-de/openapi.git", rev = "f23e4842532fd804d2597f6f8b8b09067e54e9c9" }
 openapi-schema-derive = { path = "openapi-schema-derive" }
 serde_json = "1.0"
 
