@@ -10,5 +10,5 @@ proc-macro = true
 [dependencies]
 syn = "0.15.26"
 quote = "0.6.11"
-openapi = { git = "https://github.com/softprops/openapi", rev = "c4f4706" }
+openapi = { git = "https://github.com/antoine-de/openapi", rev = "11f732b373d2dc1d725f77a245fac3677b51318b" }
 proc-macro2 = "0.4"
